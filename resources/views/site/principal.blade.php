@@ -6,7 +6,8 @@
 </head>
 <body>
     <h1>Calculadora de Horas</h1>
-    <form action={{ route('site.principal') }} method="get">
+    <form action={{ route('site.principal') }} method="post">
+        @csrf {{--  token laravel para post  --}}
         <label for="hora_inicial">Hora Inicial:</label>
         <input type="time" name="hora_inicial" required><br>
         
@@ -19,7 +20,6 @@
 </html>
 
 <?php
-/*
 $hora_inicial = $_POST['hora_inicial'];
 $hora_final = $_POST['hora_final'];
 
@@ -38,17 +38,28 @@ $horas_diurnas = 0;
 $horas_noturnas = 0;
 
 if ($horas_trabalhadas > 0) {
-    if (date('H', $timestamp_inicial) >= 6 && date('H', $timestamp_final) <= 18) {
+    $hora_inicio_diurno = strtotime('05:00');
+    $hora_fim_diurno = strtotime('22:00');
+
+    if ($timestamp_inicial >= $hora_fim_diurno || $timestamp_final <= $hora_inicio_diurno) {
+        // Horas noturnas
+        $horas_noturnas = $horas_trabalhadas;
+    } elseif ($timestamp_inicial >= $hora_inicio_diurno && $timestamp_final <= $hora_fim_diurno) {
         // Horas diurnas
         $horas_diurnas = $horas_trabalhadas;
     } else {
-        // Horas noturnas
-        $horas_noturnas = $horas_trabalhadas;
+        // Parte diurna e parte noturna
+        if ($timestamp_inicial < $hora_inicio_diurno) {
+            $horas_noturnas += ($hora_inicio_diurno - $timestamp_inicial) / 3600;
+        }
+        if ($timestamp_final > $hora_fim_diurno) {
+            $horas_noturnas += ($timestamp_final - $hora_fim_diurno) / 3600;
+        }
+        $horas_diurnas = $horas_trabalhadas - $horas_noturnas;
     }
 }
 
 // Exibir resultados
 echo "Horas Diurnas: $horas_diurnas<br>";
 echo "Horas Noturnas: $horas_noturnas";
-*/
 ?>
