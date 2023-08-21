@@ -40,32 +40,47 @@ function converterParaHoras($minutos)
     return floor($minutos / 60) + ($minutos % 60) / 100;
 }
 
-// Converte as horas para minutos
-$minutos_inicial = converterParaMinutos($hora_inicial);
-$minutos_final = converterParaMinutos($hora_final);
+        // Converte as horas para minutos
+        $minutos_inicial = converterParaMinutos($hora_inicial);
+        $minutos_final = converterParaMinutos($hora_final);
 
-// Regras de negócios
-$minutos_diurnos = 0;
-$minutos_noturnos = 0;
+        // Regras de negócios
+        $minutos_diurnos = 0;
+        $minutos_noturnos = 0;
 
-$inicio_periodo_noturno = converterParaMinutos('22:00');
-$inicio_periodo_diurno = converterParaMinutos('05:00');
+        $inicio_periodo_noturno = converterParaMinutos("22:00");
+        $inicio_periodo_diurno = converterParaMinutos("05:00");
 
+            $i = $minutos_inicial;
+            while ($i != $minutos_final) {
+                if ($i >= $minutos_inicial) {
+                    if ($i == $minutos_final) {
+                        return;
+                    }
+                    if ($i >= 1440) {
+                        $i = 0;
+                        $minutos_noturnos++;
+                    }
+                    if ($i < $inicio_periodo_noturno && $i != 0) {
+                        $minutos_diurnos++;
+                    }
+                    if ($i >= $inicio_periodo_noturno) {
+                        $minutos_noturnos++;
+                    }
+                } else {
+                    if ($i >= $inicio_periodo_diurno) {
+                        $minutos_diurnos++;
+                    } else {
+                        $minutos_noturnos++;
+                    }
+                }
+                $i++;
+            }
 
-    if ($minutos_inicial < $inicio_periodo_diurno) {
-        $minutos_noturnos += $inicio_periodo_diurno - $minutos_inicial;
-        $minutos_diurnos = $minutos_final - $minutos_inicial - $minutos_noturnos;
-
-    }
-    if ($minutos_final > $inicio_periodo_noturno) {
-        $minutos_noturnos += $minutos_final - $inicio_periodo_noturno;
-        $minutos_diurnos = $minutos_final - $minutos_inicial - $minutos_noturnos;
-    }
-
-// Converter minutos para horas
-$horas_diurnas = converterParaHoras($minutos_diurnos);
-$horas_noturnas = converterParaHoras($minutos_noturnos);
-
+        // Converter minutos para horas
+        $horas_diurnas = converterParaHoras($minutos_diurnos);
+        $horas_noturnas = converterParaHoras($minutos_noturnos);
+    
 // Exibir resultados
 echo "Horas Diurnas: $horas_diurnas<br>";
 echo "Horas Noturnas: $horas_noturnas";
